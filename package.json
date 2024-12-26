@@ -1,0 +1,48 @@
+{
+    "name": "palettepick",
+    "description": "PalettePick is a Chrome extension that highlights color strings (e.g., hex, RGB, HSL) on webpages, with each color highlighted in its own color.",
+    "version": "1.0.0",
+    "main": "src/popup.ts",
+    "type": "commonjs",
+    "scripts": {
+        "build": "webpack",
+        "start": "webpack serve --open",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "format": "prettier --write \"./**/*.{js,ts,json,html,css}\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ganemedelabs/palettepick.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ganemedelabs/palettepick/issues"
+    },
+    "homepage": "https://github.com/ganemedelabs/palettepick#readme",
+    "author": "ganemedelabs",
+    "license": "MIT",
+    "devDependencies": {
+        "@eslint/compat": "^1.2.3",
+        "@eslint/eslintrc": "^3.2.0",
+        "@eslint/js": "^9.16.0",
+        "@types/chrome": "^0.0.287",
+        "@types/node": "^22.10.1",
+        "@typescript-eslint/eslint-plugin": "^8.16.0",
+        "@typescript-eslint/parser": "^8.16.0",
+        "copy-webpack-plugin": "^12.0.2",
+        "eslint": "^9.16.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "https-browserify": "^1.0.0",
+        "prettier": "^3.4.1",
+        "stream-http": "^3.2.0",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.7.2",
+        "url": "^0.11.4",
+        "webpack": "^5.96.1",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^5.1.0"
+    }
+}
