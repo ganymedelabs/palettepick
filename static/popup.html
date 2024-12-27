@@ -4,9 +4,23 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Colorize Strings</title>
-        <meta name="description" content="" />
+        <meta
+            name="description"
+            content="A Chrome extension that highlights color strings (e.g., hex, RGB, HSL) on webpages, with each color highlighted in its own color."
+        />
+        <link rel="stylesheet" href="popup.css" />
     </head>
     <body>
+        <div>
+            <div class="options-container">
+                <button id="pick-color">Pick a Color</button>
+                <button id="generate-palettes">Generate Palettes</button>
+                <button id="close" style="display: none">X</button>
+            </div>
+
+            <ul id="color-list"></ul>
+        </div>
+
         <script src="popup.bundle.js"></script>
     </body>
 </html>

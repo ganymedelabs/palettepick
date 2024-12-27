@@ -1,83 +1,6 @@
 import { colorPatterns } from "./common";
-import { cycleColorFormat, convertToRGB } from "./utils";
-
-function getLuminance(color: string) {
-    const match = color.match(/\d+/g);
-    if (!match || match.length < 3) {
-        console.error("Invalid color format:", color);
-        return 1;
-    }
-    const [r, g, b] = match.slice(0, 3).map(Number);
-    const [red, green, blue] = [r, g, b].map((value) => {
-        const channel = value / 255;
-        return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-}
-
-function isDarkColor(color: string) {
-    const rgbColor = convertToRGB(color);
-    return getLuminance(rgbColor) < 0.5;
-}
-
-function parseColor(matchText: string): string {
-    let color: string;
-
-    if (matchText.startsWith("#")) {
-        /* eslint-disable indent */
-        color =
-            matchText.length === 4
-                ? `rgb(${parseInt(matchText[1] + matchText[1], 16)}, ${parseInt(
-                      matchText[2] + matchText[2],
-                      16
-                  )}, ${parseInt(matchText[3] + matchText[3], 16)})`
-                : `rgb(${parseInt(matchText.slice(1, 3), 16)}, ${parseInt(matchText.slice(3, 5), 16)}, ${parseInt(
-                      matchText.slice(5, 7),
-                      16
-                  )})`;
-        /* eslint-disable indent */
-    } else if (matchText.startsWith("rgb")) {
-        color = matchText.replace(/rgba?\(/, "rgb(").replace(/,\s*\d+\.?\d*\)/, ")");
-    } else if (matchText.startsWith("hsl")) {
-        const hslToRgb = (h: number, s: number, l: number) => {
-            s /= 100;
-            l /= 100;
-            const c = (1 - Math.abs(2 * l - 1)) * s;
-            const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-            const m = l - c / 2;
-            let r = 0,
-                g = 0,
-                b = 0;
-
-            if (h >= 0 && h < 60) [r, g, b] = [c, x, 0];
-            else if (h >= 60 && h < 120) [r, g, b] = [x, c, 0];
-            else if (h >= 120 && h < 180) [r, g, b] = [0, c, x];
-            else if (h >= 180 && h < 240) [r, g, b] = [0, x, c];
-            else if (h >= 240 && h < 300) [r, g, b] = [x, 0, c];
-            else if (h >= 300 && h < 360) [r, g, b] = [c, 0, x];
-
-            r = Math.round((r + m) * 255);
-            g = Math.round((g + m) * 255);
-            b = Math.round((b + m) * 255);
-            return `rgb(${r}, ${g}, ${b})`;
-        };
-
-        const hslMatch = matchText.match(/hsla?\((\d+),\s*(\d+)%?,\s*(\d+)%?(?:,\s*\d+\.?\d*\))?\)/);
-        if (hslMatch) {
-            const [, h, s, l] = hslMatch.map(Number);
-            color = hslToRgb(h, s, l);
-        }
-    } else {
-        const dummy = document.createElement("div");
-        dummy.style.color = matchText.replace(/(?:\s+|-)/g, "");
-        document.body.appendChild(dummy);
-        color = window.getComputedStyle(dummy).color;
-        document.body.removeChild(dummy);
-    }
-
-    // @ts-ignore
-    return color;
-}
+import { cycleColorFormat, convertToRGB, isDarkColor } from "./utils";
+import html2canvas from "html2canvas";
 
 async function processNode(node: Node) {
     return new Promise((resolve) => {
@@ -101,7 +24,7 @@ async function processNode(node: Node) {
                     }
 
                     const wrapper = document.createElement("mark");
-                    const bgColor = parseColor(matchText.trim());
+                    const bgColor = convertToRGB(matchText.trim());
                     const isNamedColor = colorPatterns.namedColors.test(matchText);
 
                     wrapper.style.background = bgColor;
@@ -110,6 +33,7 @@ async function processNode(node: Node) {
                     wrapper.textContent = matchText;
 
                     const formats = isNamedColor ? ["rgb", "hex", "hsl", "named"] : ["rgb", "hex", "hsl"];
+                    /* eslint-disable indent */
                     const originalFormat = isNamedColor
                         ? "named"
                         : matchText.startsWith("#")
@@ -117,6 +41,7 @@ async function processNode(node: Node) {
                           : matchText.startsWith("rgb")
                             ? "rgb"
                             : "hsl";
+                    /* eslint-enable indent */
                     const originalIndex = formats.indexOf(originalFormat);
 
                     wrapper.dataset.color = bgColor;
@@ -178,4 +103,56 @@ async function processNode(node: Node) {
 
 document.addEventListener("DOMContentLoaded", () => {
     processNode(document.body).catch(console.error);
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === "pickColor") {
+        const overlay = document.createElement("div");
+        overlay.style.position = "fixed";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100vw";
+        overlay.style.height = "100vh";
+        overlay.style.cursor = "crosshair";
+        overlay.style.zIndex = "10000";
+        overlay.style.background = "rgba(0, 0, 0, 0.1)";
+        document.body.appendChild(overlay);
+
+        const handleClick = async (event: MouseEvent) => {
+            try {
+                const x = event.clientX + window.scrollX;
+                const y = event.clientY + window.scrollY;
+
+                overlay.style.display = "none";
+
+                const scale = window.devicePixelRatio || 1;
+
+                const canvas = await html2canvas(document.body, {
+                    backgroundColor: null,
+                    useCORS: true,
+                    scale: scale,
+                });
+
+                const context = canvas.getContext("2d");
+                if (!context) throw new Error("Canvas context is null");
+
+                const pixel = context.getImageData(x * scale, y * scale, 1, 1).data;
+
+                const color = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+                chrome.runtime.sendMessage({ action: "saveColor", color });
+
+                console.log(`Picked color: ${color}`);
+            } catch (error) {
+                console.error("Error picking color:", error);
+            } finally {
+                document.body.removeChild(overlay);
+                document.removeEventListener("click", handleClick);
+            }
+        };
+
+        overlay.addEventListener("click", (event: MouseEvent) => {
+            event.stopPropagation();
+            handleClick(event);
+        });
+    }
 });

@@ -22,6 +22,11 @@
     "homepage": "https://github.com/ganemedelabs/palettepick#readme",
     "author": "ganemedelabs",
     "license": "MIT",
+    "keywords": [
+        "chrome-extension",
+        "color-picker",
+        "palette-generator"
+    ],
     "devDependencies": {
         "@eslint/compat": "^1.2.3",
         "@eslint/eslintrc": "^3.2.0",
@@ -44,5 +49,8 @@
         "webpack": "^5.96.1",
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^5.1.0"
+    },
+    "dependencies": {
+        "html2canvas": "^1.4.1"
     }
 }
