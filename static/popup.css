@@ -13,19 +13,12 @@ body {
         sans-serif;
     width: 400px;
     max-width: 400px;
+    max-height: 600px;
+    margin: 0;
     padding: 10px;
 }
 
-.options-container {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    gap: 5px;
-    margin-bottom: 5px;
-}
-
-.options-container button {
-    flex: 1 1 0%;
+#pick-color {
     padding: 5px 10px;
     cursor: pointer;
 }

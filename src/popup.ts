@@ -15,11 +15,11 @@ chrome.storage.local.get("colors", (data) => {
         const listItem = document.createElement("li");
 
         listItem.innerHTML = `
-        <!--html-->
-        <div class="rgb">${color}</div>
-        <div class="hex">${convertToHEX(color)}</div>
-        <div class="hsl">${convertToHSL(color)}</div>
-        <!--!html-->
+            <!--html-->
+            <div class="rgb">${color}</div>
+            <div class="hex">${convertToHEX(color)}</div>
+            <div class="hsl">${convertToHSL(color)}</div>
+            <!--!html-->
         `;
 
         listItem.style.color = isDarkColor(color) ? "#fff" : "#000";
@@ -39,39 +39,50 @@ chrome.storage.local.get("colors", (data) => {
     });
 });
 
-function showPalettePage(palettes: string[][]) {
-    const mainPage = document.querySelector(".options-container") as HTMLElement;
-    const colorList = document.getElementById("color-list");
+function showPalettePage(palettes: Record<string, string[][]>) {
+    console.log(palettes);
+    const mainPage = document.getElementById("main-page") as HTMLElement;
+    const palettesPage = document.getElementById("palettes-page") as HTMLElement;
+
     if (mainPage) mainPage.style.display = "none";
-    if (colorList) colorList.style.display = "none";
 
-    const paletteContainer = document.createElement("div");
-    paletteContainer.className = "palette-page";
+    if (palettesPage) {
+        const closeButton = palettesPage.querySelector(".close-button") as HTMLButtonElement;
+        palettesPage.style.display = "block";
 
-    const closeButton = document.createElement("button");
-    closeButton.textContent = "Close";
-    closeButton.className = "close-button";
-    closeButton.addEventListener("click", () => {
-        paletteContainer.remove();
-        if (mainPage) mainPage.style.display = "block";
-        if (colorList) colorList.style.display = "block";
-    });
-
-    paletteContainer.appendChild(closeButton);
-
-    palettes.forEach((palette) => {
-        const paletteDiv = document.createElement("div");
-        paletteDiv.className = "palette";
-
-        palette.forEach((color) => {
-            const colorDiv = document.createElement("div");
-            colorDiv.style.background = color;
-            colorDiv.textContent = color;
-            paletteDiv.appendChild(colorDiv);
+        closeButton.addEventListener("click", () => {
+            palettesPage.style.display = "none";
+            if (mainPage) mainPage.style.display = "block";
         });
 
-        paletteContainer.appendChild(paletteDiv);
-    });
+        Object.keys(palettes).forEach((key) => {
+            const targetSection = palettesPage.querySelector(`#${key}`) as HTMLElement;
+            const paletteArray = palettes[key];
 
-    document.body.appendChild(paletteContainer);
+            if (!targetSection) return;
+
+            const palettesContainer = targetSection.querySelector(".palettes-container") as HTMLElement;
+
+            if (palettesContainer) {
+                while (palettesContainer.firstChild) {
+                    palettesContainer.removeChild(palettesContainer.firstChild);
+                }
+
+                paletteArray.forEach((palette) => {
+                    const paletteDiv = document.createElement("div");
+                    paletteDiv.className = "palette";
+
+                    palette.forEach((color) => {
+                        const colorDiv = document.createElement("div");
+                        colorDiv.className = "color";
+                        colorDiv.style.background = color;
+                        colorDiv.textContent = convertToHEX(color);
+                        paletteDiv.appendChild(colorDiv);
+                    });
+
+                    palettesContainer.appendChild(paletteDiv);
+                });
+            }
+        });
+    }
 }

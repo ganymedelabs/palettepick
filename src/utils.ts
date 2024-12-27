@@ -138,40 +138,152 @@ export function convertToHSLA(color: string, alpha = 1) {
 }
 
 export function generatePalettes(color: string) {
-    const palettes: string[][] = [];
+    const palettes: Record<string, string[][]> = {};
     const baseHSL = convertToHSL(color);
 
-    // Extract H, S, L values
     const [h, s, l] = (baseHSL.match(/\d+/g) as RegExpMatchArray).map(Number);
 
-    // Complementary
-    const complementary = [`hsl(${(h + 180) % 360}, ${s}%, ${l}%)`];
-    palettes.push(complementary);
+    const interpolateHue = (start: number, end: number, steps: number) => {
+        const diff = (end - start + 360) % 360;
+        return Array.from(
+            { length: steps },
+            (_, i) => `hsl(${(start + (diff * (i + 1)) / (steps + 1)) % 360}, ${s}%, ${l}%)`
+        );
+    };
 
-    // Analogous
-    const analogous = [`hsl(${(h + 30) % 360}, ${s}%, ${l}%)`, `hsl(${(h + 330) % 360}, ${s}%, ${l}%)`];
-    palettes.push(analogous);
-
-    // Triadic
-    const triadic = [`hsl(${(h + 120) % 360}, ${s}%, ${l}%)`, `hsl(${(h + 240) % 360}, ${s}%, ${l}%)`];
-    palettes.push(triadic);
-
-    // Split-Complementary
-    const splitComplementary = [`hsl(${(h + 150) % 360}, ${s}%, ${l}%)`, `hsl(${(h + 210) % 360}, ${s}%, ${l}%)`];
-    palettes.push(splitComplementary);
-
-    // Rectangular (Tetradic)
-    const rectangular = [`hsl(${(h + 90) % 360}, ${s}%, ${l}%)`, `hsl(${(h + 270) % 360}, ${s}%, ${l}%)`];
-    palettes.push(rectangular);
-
-    // Square
-    const square = [
-        `hsl(${(h + 90) % 360}, ${s}%, ${l}%)`,
-        `hsl(${(h + 180) % 360}, ${s}%, ${l}%)`,
-        `hsl(${(h + 270) % 360}, ${s}%, ${l}%)`,
+    const complementaryHue = (h + 180) % 360;
+    palettes.complementary = [
+        [baseHSL, ...interpolateHue(h, complementaryHue, 3), `hsl(${complementaryHue}, ${s}%, ${l}%)`],
     ];
-    palettes.push(square);
 
-    // Convert HSL to HEX for consistent output
-    return palettes.map((group) => group.map((color) => convertToHEX(color)));
+    const analogousLeft = (h + 30) % 360;
+    const analogousRight = (h + 330) % 360;
+    palettes.analogous = [
+        [
+            `hsl(${analogousLeft}, ${s}%, ${l}%)`,
+            `hsl(${analogousLeft - 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${analogousRight + 20}, ${s}%, ${l}%)`,
+            `hsl(${analogousRight}, ${s}%, ${l}%)`,
+        ],
+        [
+            `hsl(${analogousLeft}, ${s}%, ${l}%)`,
+            `hsl(${h + 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${h - 20}, ${s}%, ${l}%)`,
+            `hsl(${analogousRight}, ${s}%, ${l}%)`,
+        ],
+    ];
+
+    const triadicLeft = (h + 120) % 360;
+    const triadicRight = (h + 240) % 360;
+    palettes.triadic = [
+        [
+            `hsl(${triadicLeft}, ${s}%, ${l}%)`,
+            `hsl(${triadicLeft + 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${triadicRight - 20}, ${s}%, ${l}%)`,
+            `hsl(${triadicRight}, ${s}%, ${l}%)`,
+        ],
+        [
+            `hsl(${triadicLeft}, ${s}%, ${l}%)`,
+            `hsl(${h + 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${h - 20}, ${s}%, ${l}%)`,
+            `hsl(${triadicRight}, ${s}%, ${l}%)`,
+        ],
+    ];
+
+    const splitComplementaryLeft = (h + 150) % 360;
+    const splitComplementaryRight = (h + 210) % 360;
+    palettes.splitComplementary = [
+        [
+            `hsl(${splitComplementaryLeft}, ${s}%, ${l}%)`,
+            `hsl(${splitComplementaryLeft - 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${splitComplementaryRight + 20}, ${s}%, ${l}%)`,
+            `hsl(${splitComplementaryRight}, ${s}%, ${l}%)`,
+        ],
+        [
+            `hsl(${splitComplementaryLeft}, ${s}%, ${l}%)`,
+            `hsl(${h - 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${h + 20}, ${s}%, ${l}%)`,
+            `hsl(${splitComplementaryRight}, ${s}%, ${l}%)`,
+        ],
+        [
+            `hsl(${splitComplementaryLeft}, ${s}%, ${l}%)`,
+            `hsl(${splitComplementaryLeft + 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${splitComplementaryRight - 20}, ${s}%, ${l}%)`,
+            `hsl(${splitComplementaryRight}, ${s}%, ${l}%)`,
+        ],
+        [
+            `hsl(${splitComplementaryLeft}, ${s}%, ${l}%)`,
+            `hsl(${h + 20}, ${s}%, ${l}%)`,
+            baseHSL,
+            `hsl(${h - 20}, ${s}%, ${l}%)`,
+            `hsl(${splitComplementaryRight}, ${s}%, ${l}%)`,
+        ],
+    ];
+
+    palettes.rectangular = [
+        [
+            baseHSL,
+            `hsl(${(h + 180) % 360}, ${s}%, ${l}%)`,
+            `hsl(${(h + 60) % 360}, ${s}%, ${l}%)`,
+            `hsl(${(h + 240) % 360}, ${s}%, ${l}%)`,
+        ],
+    ];
+
+    palettes.square = [
+        [
+            baseHSL,
+            `hsl(${(h + 90) % 360}, ${s}%, ${l}%)`,
+            `hsl(${(h + 180) % 360}, ${s}%, ${l}%)`,
+            `hsl(${(h + 270) % 360}, ${s}%, ${l}%)`,
+        ],
+    ];
+
+    palettes.monochromatic = (() => {
+        const adjustHue = (amount: number) => (h + amount) % 360;
+        const adjustLightness = (amount: number) => Math.min(100, Math.max(0, l + amount));
+        const adjustSaturation = (amount: number) => Math.min(100, Math.max(0, s + amount));
+
+        const palette1 = [
+            `hsl(${adjustHue(-40)}, ${adjustSaturation(-20)}%, ${adjustLightness(-20)}%)`,
+            `hsl(${adjustHue(-20)}, ${adjustSaturation(-10)}%, ${adjustLightness(-10)}%)`,
+            baseHSL,
+            `hsl(${adjustHue(20)}, ${adjustSaturation(10)}%, ${adjustLightness(10)}%)`,
+            `hsl(${adjustHue(40)}, ${adjustSaturation(20)}%, ${adjustLightness(20)}%)`,
+        ];
+
+        const palette2 = [
+            `hsl(${h}, ${adjustSaturation(-20)}%, ${adjustLightness(-20)}%)`,
+            `hsl(${h}, ${adjustSaturation(-10)}%, ${adjustLightness(-10)}%)`,
+            baseHSL,
+            `hsl(${h}, ${adjustSaturation(10)}%, ${adjustLightness(10)}%)`,
+            `hsl(${h}, ${adjustSaturation(20)}%, ${adjustLightness(20)}%)`,
+        ];
+
+        const palette3 = [
+            `hsl(${adjustHue(40)}, ${adjustSaturation(-20)}%, ${adjustLightness(-20)}%)`,
+            `hsl(${adjustHue(20)}, ${adjustSaturation(-10)}%, ${adjustLightness(-10)}%)`,
+            baseHSL,
+            `hsl(${adjustHue(-20)}, ${adjustSaturation(10)}%, ${adjustLightness(10)}%)`,
+            `hsl(${adjustHue(-40)}, ${adjustSaturation(20)}%, ${adjustLightness(20)}%)`,
+        ];
+
+        const monochromix = [palette1, palette2, palette3];
+
+        const isValidPalette = (palette: string[]) =>
+            palette.every((hsl) => {
+                const lightness = parseInt(hsl.match(/(\d+)%\)$/)?.[1] || "0", 10);
+                return lightness > 0 && lightness < 100;
+            });
+
+        return monochromix.filter(isValidPalette);
+    })();
+
+    return palettes;
 }

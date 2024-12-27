@@ -24,7 +24,7 @@ async function processNode(node: Node) {
                     }
 
                     const wrapper = document.createElement("mark");
-                    const bgColor = convertToRGB(matchText.trim());
+                    const bgColor = convertToRGB(matchText.trim().replace(/(?:\s+|-)/g, ""));
                     const isNamedColor = colorPatterns.namedColors.test(matchText);
 
                     wrapper.style.background = bgColor;
@@ -67,11 +67,11 @@ async function processNode(node: Node) {
                             originalNamedColor
                         ) as { color: string };
 
-                        wrapper.dataset.color = nextColor.replace(/(?:\s+|-)/, "");
+                        wrapper.dataset.color = nextColor.replace(/(?:\s+|-)/g, "");
                         wrapper.dataset.formatIndex = ((currentFormatIndex + 1) % formats.length).toString();
                         wrapper.textContent = nextColor;
                         wrapper.style.background = nextColor;
-                        wrapper.style.color = isDarkColor(nextColor.replace(/(?:\s+|-)/, "")) ? "#fff" : "#000";
+                        wrapper.style.color = isDarkColor(nextColor.replace(/(?:\s+|-)/g, "")) ? "#fff" : "#000";
                     });
 
                     fragment.appendChild(wrapper);

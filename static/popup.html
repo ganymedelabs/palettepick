@@ -11,15 +11,54 @@
         <link rel="stylesheet" href="popup.css" />
     </head>
     <body>
-        <div>
-            <div class="options-container">
+        <main id="main-page">
+            <header class="header">
+                <h2></h2>
                 <button id="pick-color">Pick a Color</button>
-                <button id="generate-palettes">Generate Palettes</button>
-                <button id="close" style="display: none">X</button>
-            </div>
+            </header>
 
-            <ul id="color-list"></ul>
-        </div>
+            <div class="body">
+                <ul id="color-list"></ul>
+            </div>
+        </main>
+
+        <aside id="palettes-page" style="display: none">
+            <header class="header">
+                <h3 id="chosen-color"></h3>
+                <button class="close-button">Close</button>
+            </header>
+
+            <div class="body">
+                <section id="complementary">
+                    <h4>Complementary</h4>
+                    <div class="palettes-container"></div>
+                </section>
+                <section id="analogous">
+                    <h4>Analogous</h4>
+                    <div class="palettes-container"></div>
+                </section>
+                <section id="triadic">
+                    <h4>Triadic</h4>
+                    <div class="palettes-container"></div>
+                </section>
+                <section id="splitComplementary">
+                    <h4>Split-Complementary</h4>
+                    <div class="palettes-container"></div>
+                </section>
+                <section id="rectangular">
+                    <h4>Rectangular</h4>
+                    <div class="palettes-container"></div>
+                </section>
+                <section id="square">
+                    <h4>Square</h4>
+                    <div class="palettes-container"></div>
+                </section>
+                <section id="monochromatic">
+                    <h4>Monochromatic</h4>
+                    <div class="palettes-container"></div>
+                </section>
+            </div>
+        </aside>
 
         <script src="popup.bundle.js"></script>
     </body>
