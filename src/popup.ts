@@ -6,6 +6,14 @@ document.getElementById("pick-color")?.addEventListener("click", async () => {
 });
 
 chrome.storage.local.get("colors", (data) => {
+    const shuffleArray = <T>(array: T[]): T[] => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    };
+
     const colors: string[] = data.colors || [];
     const colorList = document.getElementById("color-list") as HTMLUListElement;
 
@@ -28,7 +36,8 @@ chrome.storage.local.get("colors", (data) => {
 
         listItem.addEventListener("click", () => {
             const palettes = generatePalettes(color);
-            showPalettePage(palettes);
+            const shuffledPalettes = shuffleArray(palettes);
+            showPalettePage(shuffledPalettes);
         });
 
         colorList.appendChild(listItem);
@@ -39,8 +48,7 @@ chrome.storage.local.get("colors", (data) => {
     });
 });
 
-function showPalettePage(palettes: Record<string, string[][]>) {
-    console.log(palettes);
+function showPalettePage(palettes: string[][]) {
     const mainPage = document.getElementById("main-page") as HTMLElement;
     const palettesPage = document.getElementById("palettes-page") as HTMLElement;
 
@@ -55,34 +63,32 @@ function showPalettePage(palettes: Record<string, string[][]>) {
             if (mainPage) mainPage.style.display = "block";
         });
 
-        Object.keys(palettes).forEach((key) => {
-            const targetSection = palettesPage.querySelector(`#${key}`) as HTMLElement;
-            const paletteArray = palettes[key];
+        const palettesContainer = palettesPage.querySelector(".palettes-container") as HTMLElement;
+        Array.from(palettesContainer.children).forEach((paletteDiv) => paletteDiv.remove());
 
-            if (!targetSection) return;
+        if (palettes.length === 0) {
+            const p = document.createElement("p");
+            p.textContent = "Cannot generate palettes for this color.";
+            palettesContainer.appendChild(p);
+            return;
+        }
 
-            const palettesContainer = targetSection.querySelector(".palettes-container") as HTMLElement;
+        palettes.forEach((palette) => {
+            if (palette.length === 0) return;
 
-            if (palettesContainer) {
-                while (palettesContainer.firstChild) {
-                    palettesContainer.removeChild(palettesContainer.firstChild);
-                }
+            const paletteDiv = document.createElement("div");
+            paletteDiv.className = "palette";
 
-                paletteArray.forEach((palette) => {
-                    const paletteDiv = document.createElement("div");
-                    paletteDiv.className = "palette";
+            palette.forEach((color) => {
+                const colorDiv = document.createElement("div");
+                colorDiv.className = "color";
+                colorDiv.style.color = isDarkColor(color) ? "#fff" : "#000";
+                colorDiv.style.background = color;
+                colorDiv.textContent = convertToHEX(color);
+                paletteDiv.appendChild(colorDiv);
+            });
 
-                    palette.forEach((color) => {
-                        const colorDiv = document.createElement("div");
-                        colorDiv.className = "color";
-                        colorDiv.style.background = color;
-                        colorDiv.textContent = convertToHEX(color);
-                        paletteDiv.appendChild(colorDiv);
-                    });
-
-                    palettesContainer.appendChild(paletteDiv);
-                });
-            }
+            palettesContainer.appendChild(paletteDiv);
         });
     }
 }

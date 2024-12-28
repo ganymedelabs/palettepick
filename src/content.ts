@@ -140,8 +140,6 @@ chrome.runtime.onMessage.addListener((message) => {
 
                 const color = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
                 chrome.runtime.sendMessage({ action: "saveColor", color });
-
-                console.log(`Picked color: ${color}`);
             } catch (error) {
                 console.error("Error picking color:", error);
             } finally {
