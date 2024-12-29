@@ -28,7 +28,7 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["popup.bundle.js", "images/icon-48.png", "images/icon-48-disabled.png"],
+            "resources": ["popup.bundle.js", "json/palettes.json", "images"],
             "matches": ["<all_urls>"]
         }
     ],

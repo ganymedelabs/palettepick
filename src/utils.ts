@@ -137,13 +137,22 @@ export function convertToHSLA(color: string, alpha = 1) {
     return `hsla(${h}, ${s}%, ${l}%, ${alpha})`;
 }
 
-export function generatePalettes(color: string): string[][] {
+export async function generatePalettes(color: string): Promise<string[][]> {
     const palettes: string[][] = [];
     const baseHSL = convertToHSL(color);
 
     const [h, s, l] = (baseHSL.match(/\d+/g) as RegExpMatchArray).map(Number);
 
-    if (s < 25 || l > 90 || l < 20) return [];
+    // Premade Palettes
+    const palettesJson = await (async () => {
+        const url = chrome.runtime.getURL("json/palettes.json");
+        const response = await fetch(url);
+        const palettesJson = await response.json();
+        return palettesJson as string[][];
+    })();
+    palettes.push(...palettesJson.filter((palette: string[]) => palette.includes(convertToHEX(baseHSL))));
+
+    if (s < 25 || l > 90 || l < 20) return palettes;
 
     const interpolateMix = (startColor: string, endColor: string, steps: number): string[] => {
         const startRGB = convertToRGB(startColor).match(/\d+/g)?.map(Number) as number[];
@@ -219,8 +228,8 @@ export function generatePalettes(color: string): string[][] {
     );
 
     // Split-Complementary
-    const splitComplementaryLeft = (complementaryHue + 30) % 360;
-    const splitComplementaryRight = (complementaryHue - 30) % 360;
+    const splitComplementaryLeft = (complementaryHue + 20) % 360;
+    const splitComplementaryRight = (complementaryHue - 20) % 360;
     palettes.push(
         (() => {
             const anchor = random("base", "splitComplementary");
@@ -298,21 +307,58 @@ export function generatePalettes(color: string): string[][] {
 
             const direction = random("positive", "negative");
             const anchor = random("base", "monochromic");
-
-            const palette = [
-                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 40 : -40)}, ${adjustSaturation(-20)}%, ${adjustLightness(-20)}%)`,
-                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 20 : -20)}, ${adjustSaturation(-10)}%, ${adjustLightness(-10)}%)`,
+            if (l < 70 && l > 30) {
+                if (s < 50) {
+                    return [
+                        baseHSL,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 10 : -10)}, ${adjustSaturation(10)}%, ${l}%)`,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 20 : -20)}, ${adjustSaturation(20)}%, ${l}%)`,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 30 : -30)}, ${adjustSaturation(30)}%, ${l}%)`,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 40 : -40)}, ${adjustSaturation(40)}%, ${l}%)`,
+                    ];
+                }
+                return [
+                    baseHSL,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 10 : -10)}, ${adjustSaturation(-10)}%, ${l}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 20 : -20)}, ${adjustSaturation(-20)}%, ${l}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 30 : -30)}, ${adjustSaturation(-30)}%, ${l}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 40 : -40)}, ${adjustSaturation(-40)}%, ${l}%)`,
+                ];
+            }
+            if (l < 70) {
+                if (s < 50) {
+                    return [
+                        baseHSL,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 10 : -10)}, ${adjustSaturation(10)}%, ${adjustLightness(10)}%)`,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 20 : -20)}, ${adjustSaturation(20)}%, ${adjustLightness(20)}%)`,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 30 : -30)}, ${adjustSaturation(30)}%, ${adjustLightness(30)}%)`,
+                        `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 40 : -40)}, ${adjustSaturation(40)}%, ${adjustLightness(40)}%)`,
+                    ];
+                }
+                return [
+                    baseHSL,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 10 : -10)}, ${adjustSaturation(-10)}%, ${adjustLightness(10)}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 20 : -20)}, ${adjustSaturation(-20)}%, ${adjustLightness(20)}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 30 : -30)}, ${adjustSaturation(-30)}%, ${adjustLightness(30)}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 40 : -40)}, ${adjustSaturation(-40)}%, ${adjustLightness(40)}%)`,
+                ];
+            }
+            if (s < 30) {
+                return [
+                    baseHSL,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 10 : -10)}, ${adjustSaturation(10)}%, ${adjustLightness(-10)}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 20 : -20)}, ${adjustSaturation(20)}%, ${adjustLightness(-20)}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 30 : -30)}, ${adjustSaturation(30)}%, ${adjustLightness(-30)}%)`,
+                    `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 40 : -40)}, ${adjustSaturation(40)}%, ${adjustLightness(-40)}%)`,
+                ];
+            }
+            return [
                 baseHSL,
-                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? -20 : 20)}, ${adjustSaturation(10)}%, ${adjustLightness(10)}%)`,
-                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? -40 : 40)}, ${adjustSaturation(20)}%, ${adjustLightness(20)}%)`,
+                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 10 : -10)}, ${adjustSaturation(-20)}%, ${adjustLightness(-10)}%)`,
+                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 20 : -20)}, ${adjustSaturation(-10)}%, ${adjustLightness(-20)}%)`,
+                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 30 : -30)}, ${adjustSaturation(-30)}%, ${adjustLightness(-30)}%)`,
+                `hsl(${anchor === "base" ? h : adjustHue(direction === "positive" ? 40 : -40)}, ${adjustSaturation(-40)}%, ${adjustLightness(-40)}%)`,
             ];
-
-            return palette.every((hsl) => {
-                const lightness = parseInt(hsl.match(/(\d+)%\)$/)?.[1] || "0", 10);
-                return lightness > 15 && lightness < 85;
-            })
-                ? palette
-                : [];
         })()
     );
 

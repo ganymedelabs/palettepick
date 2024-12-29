@@ -13,23 +13,61 @@
     <body>
         <main id="main-page">
             <header class="header">
-                <h2></h2>
-                <button id="pick-color">Pick a Color</button>
+                <h1 class="title">PalettePick</h1>
+                <button id="pick-color">
+                    <img
+                        src="images/color-picker.png"
+                        alt="Picker icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/picker)"
+                        width="32"
+                        height="32"
+                    />
+                </button>
             </header>
 
             <div class="body">
                 <ul id="color-list"></ul>
+
+                <div id="empty" style="display: none">
+                    <div class="empty-wrapper">
+                        <img
+                            src="images/color.png"
+                            alt="Close icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/drip)"
+                            width="128"
+                            height="128"
+                        />
+                        <strong>Use the color picker to save colors and generate palettes</strong>
+                    </div>
+                </div>
             </div>
         </main>
 
         <aside id="palettes-page" style="display: none">
             <header class="header">
-                <h3 id="chosen-color"></h3>
-                <button class="close-button">Close</button>
+                <button class="close-button">
+                    <img
+                        src="images/arrow.png"
+                        alt="Arrows icons created by Slidicon - Flaticon (https://www.flaticon.com/free-icons/arrows)"
+                        width="32"
+                        height="32"
+                    />
+                </button>
+                <h2 class="title"></h2>
             </header>
 
             <div class="body">
-                <div class="palettes-container"></div>
+                <ul id="palettes-list"></ul>
+
+                <div id="error" style="display: none">
+                    <div class="error-wrapper">
+                        <img
+                            src="images/error.png"
+                            alt="Close icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/close)"
+                            width="128"
+                            height="128"
+                        />
+                        <strong>Cannot generate palettes for this color</strong>
+                    </div>
+                </div>
             </div>
         </aside>
 

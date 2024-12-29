@@ -32,4 +32,4 @@ For inquiries or more information, you can reach out to us at [ganemedelabs@gmai
 
 ## 🙏 Credits
 
-Icon used in this extension is by [Smashicons](https://www.flaticon.com/free-icons/photos) on Flaticon.
+Icons used in this extension is by [Freepik](https://www.flaticon.com/free-icons/art-and-design) on Flaticon.
