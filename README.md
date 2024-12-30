@@ -41,14 +41,18 @@ You can also interact with these highlighted colors to transform them into diffe
 
 ## 🔧 Installation
 
-1. Clone the repository or download the zip file:
-    ```bash
-    git clone https://github.com/ganemedelabs/palettepick.git
-    ```
-2. Open Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer Mode** using the toggle in the top right corner.
-4. Click **Load Unpacked** and select the folder containing the extension files.
-5. PalettePick is now ready to use!
+1. Clone the repository or download the zip file:  
+   ```bash
+   git clone https://github.com/ganemedelabs/palettepick.git
+   ```
+2. Navigate to the project directory and build the project by running:  
+   ```bash
+   npm run build
+   ```
+3. Open Chrome and go to `chrome://extensions/`.  
+4. Enable **Developer Mode** using the toggle in the top-right corner.  
+5. Click **Load Unpacked** and select the `dist` folder.  
+6. PalettePick is now ready to use!  
 
 ## 📜 License
 
