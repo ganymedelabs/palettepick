@@ -76,8 +76,9 @@ PalettePick will soon support additional **CSS color models**, including:
    ```bash
    git clone https://github.com/ganemedelabs/palettepick.git
    ```
-2. Navigate to the project directory and build the project by running:  
+2. Navigate to the project directory and run these commands to install dependencies and build the project:  
    ```bash
+   npm install
    npm run build
    ```
 3. Open Chrome and go to `chrome://extensions/`.  
