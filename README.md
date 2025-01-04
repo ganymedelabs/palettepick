@@ -12,6 +12,7 @@ You can also interact with these highlighted colors to transform them into diffe
 ## 📋 Table of Contents
 
 - [Features](#-features)
+- [Upcoming Support](#-upcoming-support)
 - [Installation](#-installation)
 - [License](#-license)
 - [Contact](#-contact)
@@ -39,6 +40,35 @@ You can also interact with these highlighted colors to transform them into diffe
 - **Palette Generation**:  
   - Generate color palettes based on saved colors.  
   - Click on saved colors to view harmonious palettes.  
+
+## 📅 Upcoming Support  
+
+PalettePick will soon support additional **CSS color models**, including:  
+
+-   [ ] **HWB (Hue, Whiteness, Blackness)**:  
+  - `hwb(12 50% 0%)`  
+  - `hwb(194 0% 0% / 0.5)`  
+
+-   [ ] **LAB (Lightness, A-axis, B-axis)**:  
+  - `lab(50% 40 59.5)`  
+  - `lab(50% 40 59.5 / 0.5)`  
+
+-   [ ] **LCH (Lightness, Chroma, Hue)**:  
+  - `lch(52.2% 72.2 50)`  
+  - `lch(52.2% 72.2 50 / 0.5)`  
+
+-   [ ] **Oklab (Lightness, A-axis, B-axis)**:  
+  - `oklab(59% 0.1 0.1)`  
+  - `oklab(59% 0.1 0.1 / 0.5)`  
+
+-   [ ] **Oklch (Lightness, Chroma, Hue)**:  
+  - `oklch(60% 0.15 50)`  
+  - `oklch(60% 0.15 50 / 0.5)`  
+
+-   [ ] **Relative CSS Colors**:  
+  - `hsl(from red 240deg s l)`  
+  - `hwb(from green h w b / 0.5)`  
+  - `lch(from blue calc(l + 20) c h)`  
 
 ## 🔧 Installation
 
